@@ -36,5 +36,16 @@ pipeline {
                 }
             } // post
         } // stage Test
+         stage('Push') {
+
+		        steps {
+                    sh 'docker build -t bormaxv/jenkins .'
+                    sh 'docker run -d -p 5000:5000 bormaxv/jenkins'
+                    sh 'docker ps -a'
+                    sh 'docker login -u ${{ secrets.login }} -p ${{ secrets.pass }}'
+                    sh 'docker push bormaxv/jenkins:latest'
+		        }
+	}
+                  
     } // stages
 }
