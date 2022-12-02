@@ -23,6 +23,11 @@ pipeline {
                     sh 'apk add --update python3 py-pip'
                     sh 'pip install xmlrunner'
                     sh 'python3 unitTestCherga.py'
+		    sh 'docker build -t bormaxv/jenkins .'
+                    sh 'docker run -d -p 5000:5000 bormaxv/jenkins'
+                    sh 'docker ps -a'
+                    sh 'docker login -u ${{ secrets.login }} -p ${{ secrets.pass }}'
+                    sh 'docker push bormaxv/jenkins:latest'
                 }
                 post {
                     always {
@@ -36,15 +41,5 @@ pipeline {
                 }
             } // post
         } // stage Test
-               stage('Push') {
-
-		steps {
-                    sh 'docker build -t bormaxv/jenkins .'
-                    sh 'docker run -d -p 5000:5000 bormaxv/jenkins'
-                    sh 'docker ps -a'
-                    sh 'docker login -u ${{ secrets.login }} -p ${{ secrets.pass }}'
-                    sh 'docker push bormaxv/jenkins:latest'
-		}
-	}
     } // stages
 }
