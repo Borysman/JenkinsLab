@@ -1,5 +1,10 @@
 pipeline {
                 options { timestamps() }
+		environment {
+                	registry = "bormaxv/jenkins"
+                	registryCredential = 'dockerhub_login'
+                	dockerImage = ''
+            	}
                 agent none
                 stages {
                     stage('Check scm') {
@@ -36,16 +41,22 @@ pipeline {
                 }
             } // post
         } // stage Test
-         stage('Push') {
-
-		        steps {
-                    sh 'docker build -t bormaxv/jenkins .'
-                    sh 'docker run -d -p 5000:5000 bormaxv/jenkins'
-                    sh 'docker ps -a'
-                    sh 'docker login -u ${{ secrets.login }} -p ${{ secrets.pass }}'
-                    sh 'docker push bormaxv/jenkins:latest'
-		        }
-	}
+         stage('Image building') {
+                    steps {
+                        script {
+                            dockerImage = docker.build registry
+                        }
+                    }
+                }
+         stage('Deploy') {
+                    steps {
+                        script {
+                            docker.withRegistry( '', registryCredential ) {
+                                dockerImage.push('latest')
+                            }
+                        }
+                    }
+                }
                   
     } // stages
 }
