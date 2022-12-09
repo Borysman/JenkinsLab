@@ -1,8 +1,8 @@
 pipeline {
                 options { timestamps() }
 		environment {
-                	registry = "bormaxv/jenkins"
-                	registryCredential = 'dockerhub_login'
+                	registry = "vikakov/jenkins"
+                	registryCredential = 'dockerhub_login_V'
                 	dockerImage = ''
             	}
                 agent none
@@ -27,7 +27,7 @@ pipeline {
                 steps {
                     sh 'apk add --update python3 py-pip'
                     sh 'pip install xmlrunner'
-                    sh 'python3 unitTestCherga.py'
+                    sh 'python3 unitTestOrders.py'
                 }
                 post {
                     always {
